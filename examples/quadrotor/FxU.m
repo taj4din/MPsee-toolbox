@@ -1,0 +1,101 @@
+function Fvector = FxU(Xvector,TVP,TVP_f,Uvector,con)
+N=8;
+dimu=4;
+dimec=0;
+dimic=0;
+dimx=12;
+coder.allowpcode('plain');
+Xf1=TVP_f(1);
+Xf2=TVP_f(2);
+Xf3=TVP_f(3);
+Xf4=TVP_f(4);
+Xf5=TVP_f(5);
+Xf6=TVP_f(6);
+Xf7=TVP_f(7);
+Xf8=TVP_f(8);
+Xf9=TVP_f(9);
+Xf10=TVP_f(10);
+Xf11=TVP_f(11);
+Xf12=TVP_f(12);
+q1=TVP_f(13);
+q2=TVP_f(14);
+q3=TVP_f(15);
+q4=TVP_f(16);
+q5=TVP_f(17);
+q6=TVP_f(18);
+q7=TVP_f(19);
+q8=TVP_f(20);
+q9=TVP_f(21);
+q10=TVP_f(22);
+q11=TVP_f(23);
+q12=TVP_f(24);
+w1=TVP_f(25);
+w2=TVP_f(26);
+w3=TVP_f(27);
+w4=TVP_f(28);
+dt=TVP_f(29);
+Fvector=zeros(32,1);
+X=zeros(dimx,N+1);
+Lmd=zeros(dimx,N+1);
+lmdN=zeros(dimx,1);
+X(:,1)=Xvector;
+for i=2:N+1
+    Xk=X(:,i-1);
+    Uk=Uvector((i-2)*(dimec+dimu)+1:(i-1)*(dimec+dimu));
+    tau=(i-1);
+    X(:,i)=X(:,i-1)+dt*f(Xk,TVP,TVP_f,Uk,tau);
+end
+Xk1=X(1,N+1);
+Xk2=X(2,N+1);
+Xk3=X(3,N+1);
+Xk4=X(4,N+1);
+Xk5=X(5,N+1);
+Xk6=X(6,N+1);
+Xk7=X(7,N+1);
+Xk8=X(8,N+1);
+Xk9=X(9,N+1);
+Xk10=X(10,N+1);
+Xk11=X(11,N+1);
+Xk12=X(12,N+1);
+lmdN(1)=0;
+lmdN(2)=0;
+lmdN(3)=0;
+lmdN(4)=0;
+lmdN(5)=0;
+lmdN(6)=0;
+lmdN(7)=0;
+lmdN(8)=0;
+lmdN(9)=0;
+lmdN(10)=0;
+lmdN(11)=0;
+lmdN(12)=0;
+Lmd(:,N+1)=lmdN';
+if nargin == 5
+    for i=N:-1:1
+        Xk=X(:,i);
+        Uk=Uvector((i-1)*(dimec+dimu)+1:(i)*(dimec+dimu));
+        tau=i;
+        Lmd(:,i)=Lmd(:,i+1)+dt*dHdx(Xk,TVP,TVP_f,Uk,tau,Lmd(:,i+1), con);
+    end
+    for i=1:N
+        Xk=X(:,i);
+        Uk=Uvector((i-1)*(dimec+dimu)+1:(i)*(dimec+dimu));
+        Lmdk=Lmd(:,i+1);
+        tau=i;
+        Fvector((i-1)*dimu+1:(i)*(dimu),:)=dHdu(Xk,TVP,TVP_f,Uk,tau,Lmdk,con);
+    end
+else
+    for i=N:-1:1
+        Xk=X(:,i);
+        Uk=Uvector((i-1)*(dimec+dimu)+1:(i)*(dimec+dimu));
+        tau=i;
+        Lmd(:,i)=Lmd(:,i+1)+dt*dHdx(Xk,TVP,TVP_f,Uk,tau,Lmd(:,i+1));
+    end
+    for i=1:N
+        Xk=X(:,i);
+        Uk=Uvector((i-1)*(dimec+dimu)+1:(i)*(dimec+dimu));
+        Lmdk=Lmd(:,i+1);
+        tau=i;
+        Fvector((i-1)*dimu+1:(i)*(dimu),:)=dHdu(Xk,TVP,TVP_f,Uk,tau,Lmdk);
+    end
+end
